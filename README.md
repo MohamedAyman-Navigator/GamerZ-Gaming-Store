@@ -1,119 +1,136 @@
-# GamerZ – AI-Powered Gaming Store Platform
+# 🎮 GamerZ - Ultimate Game Store Platform
 
-GamerZ is a modern, production-grade web application designed to deliver a high-performance gaming e-commerce experience.
-It combines a clean UI, scalable backend architecture, and an AI-assisted user workflow powered by Google Gemini models.
-This project was developed end-to-end by a single developer, covering frontend, backend, database, and AI integration.
+![Python](https://img.shields.io/badge/Python-3.8%2B-blue)
+![Flask](https://img.shields.io/badge/Flask-2.0%2B-green)
+![SQL Server](https://img.shields.io/badge/Database-SQL%20Server-red)
+![Gemini AI](https://img.shields.io/badge/AI-Google%20Gemini-purple)
 
----
-
-## Overview
-
-GamerZ demonstrates how an intelligent digital storefront can enhance user experience through real-time recommendations, hardware compatibility analysis, secure transactions, and cinematic product presentation.
-The platform is built with a product-focused mindset — emphasizing reliability, usability, and modern software engineering practices.
+**GamerZ** is a modern, full-featured e-commerce web application designed for gamers. It offers a seamless platform to browse, purchase, and manage video games, DLCs, and special editions. Powered by **Flask** and **SQL Server**, it integrates **Google's Gemini AI** to provide an intelligent shopping assistant that knows the store's inventory in real-time.
 
 ---
 
-## Core Features
+## ✨ Features
 
-### Storefront Experience
-- Structured catalog with dynamic product rendering
-- High-fidelity product detail pages
-- Responsive layout with modern CSS architecture
-- Search-optimized game listings and metadata
-
-### AI-Assisted User Interaction
-- Integration with Google Gemini 2.0
-- Game recommendations based on user preferences
-- Hardware compatibility analysis using user-provided specs
-- Context-aware conversation with session retention
-
-### Authentication & User Accounts
-- Secure registration and login system
-- Encrypted password storage (Werkzeug)
-- Persistent library of purchased games
-- Real-time session-based user experience
-
-### Shopping & Transactions
-- Dynamic add-to-cart functionality with AJAX updates
-- Order processing pipeline
-- Automated digital key generation for purchased titles
-- Database-backed purchase history and user inventory
-
-### Administration Panel
-- Game inventory management (Add / Edit / Delete)
-- Validation and controlled CRUD operations
-- Secure admin authentication layer
+*   **🛒 Comprehensive Storefront**: Browse a vast catalog of Games, DLCs, and Special Editions.
+*   **🤖 AI-Powered Assistant**: Integrated Chatbot (powered by Google Gemini) that answers questions about game specs, prices, and stock availability.
+*   **👤 User Accounts**: Secure registration and login system with profile management and avatar uploads.
+*   **💳 Shopping Cart & Checkout**: Full cart functionality with simulated checkout and digital key generation.
+*   **📦 Order History**: Users can view their purchased games and access their unique activation keys.
+*   **🔧 Admin Dashboard**: Powerful admin interface to add, edit, or delete games and view sales statistics.
+*   **📊 Analytics**: Real-time dashboard showing sales data, genre distribution, and top-rated games.
+*   **🖥️ Hardware Section**: Dedicated pages for hardware showcases (e.g., RTX 5090).
 
 ---
 
-## Tech Stack
+## 🛠️ Tech Stack
 
-**Backend:** Python (Flask)  
-**Database:** SQLite  
-**AI Integration:** Google Gemini 2.0 (via `google-generativeai`)  
-**Frontend:** HTML5, CSS3, JavaScript  
-**Security:** Werkzeug hashing + session control  
+*   **Backend**: Python (Flask Framework)
+*   **Database**: Microsoft SQL Server (via `pyodbc`)
+*   **Frontend**: HTML5, CSS3, JavaScript (Jinja2 Templates)
+*   **AI Integration**: Google Generative AI (Gemini 2.0 Flash)
+*   **Authentication**: Session-based auth with password hashing (`werkzeug.security`)
 
 ---
 
-## Installation
+## 🚀 Getting Started
 
-### 1. Clone the Repository
+### Prerequisites
+
+*   Python 3.8 or higher
+*   Microsoft SQL Server (Local or Remote instance)
+*   ODBC Driver 18 for SQL Server
+*   Google Gemini API Key
+
+### Installation
+
+1.  **Clone the repository**
+    ```bash
+    git clone https://github.com/yourusername/gamerz.git
+    cd gamerz
+    ```
+
+2.  **Create a Virtual Environment**
+    ```bash
+    python -m venv .venv
+    source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+    ```
+
+3.  **Install Dependencies**
+    ```bash
+    pip install -r requirements.txt
+    ```
+
+4.  **Database Setup**
+    *   Ensure SQL Server is running.
+    *   Create a database named `Gamerz__db`.
+    *   Update the `DB_CONFIG` dictionary in `app.py` with your server credentials:
+        ```python
+        DB_CONFIG = {
+            "DRIVER": "{ODBC Driver 18 for SQL Server}",
+            "SERVER": "localhost",
+            "DATABASE": "Gamerz__db",
+            "UID": "your_username",
+            "PWD": "your_password",
+        }
+        ```
+    *   *Note: Ensure your database schema matches the application's expected tables (`users`, `games`, `orders`, etc.).*
+
+6.  **Seed the Database**
+    *   Populate your store with real game data from Steam by running the import script:
+        ```bash
+        python import_steam.py
+        ```
+
+7.  **Configure AI API**
+    *   Open `app.py` and replace the placeholder with your API key:
+        ```python
+        GEMINI_API_KEY = "YOUR_GOOGLE_GEMINI_API_KEY"
+        ```
+
+### Running the Application
+
 ```bash
-git clone https://github.com/MohamedAyman-Navigator/GamerZ-Gaming-Store.git
-cd GamerZ-Gaming-Store
+python app.py
 ```
-### 2. Install Dependencies
-```bash
-pip install flask google-generativeai werkzeug
-```
-### 3. Configure API Key
- Open app.py and replace:
-  ```
-  GEMINI_API_KEY = "YOUR-API-KEY"
-```
-### 4. Initialize the Database
-```bash
-python3 init_db.py
-```
-### 5. Run the Application
-```bash
-python3 app.py
-```
-Then open:
-```
-http://127.0.0.1:5000
-```
+The application will start at `http://127.0.0.1:5000`.
+
 ---
-## Project Structure
+
+## 📂 Project Structure
+
 ```
 GamerZ/
-├── app.py
-├── init_db.py
-├── schema.sql
-├── database.db
-├── static/
-│   ├── style.css
-│   ├── script.js
-│   └── assets/
-└── templates/
-    ├── index.html
-    ├── game_details.html
-    ├── cart.html
-    ├── login.html
-    ├── signup.html
-    ├── profile.html
-    ├── order_success.html
-    ├── admin_index.html
-    └── admin_form.html
+├── app.py              # Main application entry point and routes
+├── import_steam.py     # Utility script to import game data
+├── requirements.txt    # Python dependencies
+├── static/             # Static assets (CSS, JS, Images, Uploads)
+├── templates/          # HTML Templates (Jinja2)
+└── README.md           # Project documentation
 ```
+
 ---
-## Default Admin Access
-Access the panel via /admin after login.
-```
-Username: admin
-Password: 123
-```
+
+## 🛡️ Admin Access
+
+To access the Admin Dashboard:
+1.  Register a new user account.
+2.  In the database, update the user's `id` to `1` (or modify the `is_admin()` check in `app.py`).
+3.  Navigate to `/admin` after logging in.
+
 ---
-## License
-This project is open-source and available under the MIT License.
+
+## 🤝 Contributing
+
+Contributions are welcome! Please fork the repository and submit a pull request for any enhancements or bug fixes.
+
+1.  Fork the Project
+2.  Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3.  Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4.  Push to the Branch (`git push origin feature/AmazingFeature`)
+5.  Open a Pull Request
+
+---
+
+## 📄 License
+
+This project is open-source and available under the [MIT License](LICENSE).
