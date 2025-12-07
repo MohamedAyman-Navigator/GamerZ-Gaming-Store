@@ -74,6 +74,11 @@
         }
         ```
     *   *Note: Ensure your database schema matches the application's expected tables (`users`, `games`, `orders`, etc.).*
+    *   **Initialize the Database**: Run the provided `schema.sql` script in SQL Server Management Studio (SSMS) or via `sqlcmd` to create the database and tables:
+        ```bash
+        sqlcmd -S localhost -U sa -P YourPassword -i schema.sql
+        ```
+        *(Replace `YourPassword` with your actual SQL Server password)*
 
 6.  **Seed the Database**
     *   Populate your store with real game data from Steam by running the import script:
