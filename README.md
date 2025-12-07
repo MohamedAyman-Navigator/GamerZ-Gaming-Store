@@ -1,4 +1,4 @@
-# 🎮 GamerZ - Ultimate Game Store Platform
+# GamerZ - Ultimate Game Store Platform
 
 ![Python](https://img.shields.io/badge/Python-3.8%2B-blue)
 ![Flask](https://img.shields.io/badge/Flask-2.0%2B-green)
@@ -9,20 +9,20 @@
 
 ---
 
-## ✨ Features
+## Features
 
-*   **🛒 Comprehensive Storefront**: Browse a vast catalog of Games, DLCs, and Special Editions.
-*   **🤖 AI-Powered Assistant**: Integrated Chatbot (powered by Google Gemini) that answers questions about game specs, prices, and stock availability.
-*   **👤 User Accounts**: Secure registration and login system with profile management and avatar uploads.
-*   **💳 Shopping Cart & Checkout**: Full cart functionality with simulated checkout and digital key generation.
-*   **📦 Order History**: Users can view their purchased games and access their unique activation keys.
-*   **🔧 Admin Dashboard**: Powerful admin interface to add, edit, or delete games and view sales statistics.
-*   **📊 Analytics**: Real-time dashboard showing sales data, genre distribution, and top-rated games.
-*   **🖥️ Hardware Section**: Dedicated pages for hardware showcases (e.g., RTX 5090).
+*   **Comprehensive Storefront**: Browse a vast catalog of Games, DLCs, and Special Editions.
+*   **AI-Powered Assistant**: Integrated Chatbot (powered by Google Gemini) that answers questions about game specs, prices, and stock availability.
+*   **User Accounts**: Secure registration and login system with profile management and avatar uploads.
+*   **Shopping Cart & Checkout**: Full cart functionality with simulated checkout and digital key generation.
+*   **Order History**: Users can view their purchased games and access their unique activation keys.
+*   **Admin Dashboard**: Powerful admin interface to add, edit, or delete games and view sales statistics.
+*   **Analytics**: Real-time dashboard showing sales data, genre distribution, and top-rated games.
+*   **Hardware Section**: Dedicated pages for hardware showcases (e.g., RTX 5090).
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 *   **Backend**: Python (Flask Framework)
 *   **Database**: Microsoft SQL Server (via `pyodbc`)
@@ -32,7 +32,7 @@
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 
@@ -96,7 +96,7 @@ The application will start at `http://127.0.0.1:5000`.
 
 ---
 
-## 📂 Project Structure
+## Project Structure
 
 ```
 GamerZ/
@@ -110,7 +110,7 @@ GamerZ/
 
 ---
 
-## 🛡️ Admin Access
+## Admin Access
 
 To access the Admin Dashboard:
 1.  Register a new user account.
@@ -119,7 +119,7 @@ To access the Admin Dashboard:
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 Contributions are welcome! Please fork the repository and submit a pull request for any enhancements or bug fixes.
 
@@ -131,6 +131,6 @@ Contributions are welcome! Please fork the repository and submit a pull request 
 
 ---
 
-## 📄 License
+## License
 
 This project is open-source and available under the [MIT License](LICENSE).
