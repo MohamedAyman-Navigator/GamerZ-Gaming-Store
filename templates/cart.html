@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Shopping Cart - GamerZ</title>
+    <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Rajdhani:wght@400;600;700&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* CART SPECIFIC STYLES */
+        /* CART SPECIFIC STYLES */
+        .cart-container {
+            /* CHANGED: Increased from 150px to 220px to clear the header */
+            padding-top: 220px;
+            width: 80%;
+            margin: 0 auto;
+            color: white;
+            font-family: 'Rajdhani', sans-serif;
+        }
+
+        .cart-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3rem;
+            color: var(--primary);
+            text-shadow: 0 0 10px var(--primary);
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        .cart-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 15px;
+            overflow: hidden;
+            border: 1px solid var(--accent);
+        }
+
+        .cart-table th {
+            background: var(--accent);
+            padding: 20px;
+            text-align: left;
+            font-family: 'Orbitron', sans-serif;
+            color: var(--primary);
+        }
+
+        .cart-table td {
+            padding: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 1.2rem;
+        }
+
+        .cart-item-img {
+            width: 80px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 5px;
+            border: 1px solid var(--primary);
+        }
+
+        .total-section {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 30px;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .total-price {
+            font-size: 2rem;
+            font-family: 'Orbitron', sans-serif;
+            color: white;
+        }
+
+        .checkout-btn {
+            background: var(--primary);
+            color: black;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 30px;
+            transition: 0.3s;
+        }
+
+        .checkout-btn:hover {
+            box-shadow: 0 0 20px var(--primary);
+            transform: scale(1.05);
+        }
+
+        .clear-btn {
+            color: #ff4444;
+            text-decoration: none;
+            font-size: 1.1rem;
+            border: 1px solid #ff4444;
+            padding: 10px 20px;
+            border-radius: 20px;
+            transition: 0.3s;
+        }
+
+        .clear-btn:hover {
+            background: #ff4444;
+            color: white;
+        }
+
+        .empty-msg {
+            text-align: center;
+            font-size: 1.5rem;
+            color: #888;
+            margin-top: 50px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="cursor-dot"></div>
+    <div class="cursor-outline"></div>
+
+    <header>
+        <div class="logo"><a href="/"><img src="/static/assets/Logo.png" alt="GamerZ Logo"></a></div>
+        <div class="search-bar">
+            <input type="text" id="search-input" placeholder="Search games..." autocomplete="off">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <div id="search-results" class="search-results-dropdown"></div>
+        </div>
+        <div class="torch-toggle" id="themeToggle"><i class="fa-solid fa-fire-flame-curved"></i></div>
+
+        <a href="/cart" class="cart-wrapper" style="color: var(--primary);">
+            <i class="fa-solid fa-cart-shopping"></i>
+        </a>
+
+        {% if session.get('username') %}
+        <div style="display: flex; align-items: center;">
+            <a href="/profile" class="user-profile"
+                style="text-decoration: none; display: flex; align-items: center; gap: 10px;">
+                {% if session.get('profile_photo') %}
+                <img src="/static/uploads/{{ session.get('profile_photo') }}" alt="Profile"
+                    style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary);">
+                {% else %}
+                <i class="fa-regular fa-user"></i>
+                {% endif %}
+                <span style="font-size: 0.9rem;">{{ session.get('username') }}</span>
+            </a>
+            <a href="/logout"
+                style="margin-left: 15px; font-size: 0.9rem; color: #ff4444; text-decoration: none; font-family: 'Rajdhani', sans-serif;"
+                title="Logout">
+                <i class="fa-solid fa-right-from-bracket"></i>
+            </a>
+        </div>
+        {% else %}
+        <a href="/login" class="user-profile" style="text-decoration: none;">
+            <i class="fa-solid fa-user"></i><span style="margin-left: 8px;">Login</span>
+        </a>
+        {% endif %}
+    </header>
+
+    <div class="cart-container">
+        <h1 class="cart-title">Your Shopping Cart</h1>
+
+        {% if games %}
+        <table class="cart-table">
+            <thead>
+                <tr>
+                    <th>Game</th>
+                    <th>Title</th>
+                    <th>Platform</th>
+                    <th>Price</th>
+                    <th style="text-align: center;">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for game in games %}
+                <tr>
+                    <td><img src="{{ game.image }}" class="cart-item-img"></td>
+                    <td>{{ game.title }}</td>
+                    <td>PC / Digital Key</td>
+                    <td>${{ game.price }}</td>
+                    <td style="text-align: center;">
+                        <a href="/remove_from_cart/{{ game.id }}" onclick="removeItem(event, '{{ game.id }}')"
+                            style="color: #ff4444; font-size: 1.2rem; transition: 0.3s;" title="Remove Item">
+                            <i class="fa-solid fa-trash"></i>
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="total-section">
+            <a href="/clear_cart" class="clear-btn">Clear Cart</a>
+            <div class="total-price">Total: ${{ total }}</div>
+            <a href="/checkout" style="text-decoration: none;">
+                <button class="checkout-btn">Checkout</button>
+            </a>
+        </div>
+
+        {% else %}
+        <div class="empty-msg fade-in">Your cart is empty. Go add some games!</div>
+        <div class="fade-in" style="text-align: center; margin-top: 20px; animation-delay: 0.3s;">
+            <a href="/" class="checkout-btn" style="text-decoration: none; display: inline-block;">Back to Store</a>
+        </div>
+        {% endif %}
+    </div>
+
+    <script src="/static/script.js"></script>
+</body>
+
+</html>

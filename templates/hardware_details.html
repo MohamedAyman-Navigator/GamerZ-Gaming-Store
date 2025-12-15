@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ item.title }} - GamerZ Hardware</title>
+    <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Rajdhani:wght@400;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+    <div class="cursor-dot"></div>
+    <div class="cursor-outline"></div>
+
+    <header>
+        <div class="logo">
+            <a href="/"><img src="/static/assets/Logo.png" alt="GamerZ Logo"></a>
+        </div>
+        <div class="search-bar">
+            <input type="text" id="search-input" placeholder="Search hardware..." autocomplete="off">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <div id="search-results" class="search-results-dropdown"></div>
+        </div>
+        <div class="torch-toggle" id="themeToggle" title="Toggle Light Mode"><i
+                class="fa-solid fa-fire-flame-curved"></i></div>
+        <a href="/cart" class="cart-wrapper"><i class="fa-solid fa-cart-shopping"></i><span id="cart-count">0</span></a>
+        {% if session.get('username') %}
+        <div style="display: flex; align-items: center;">
+            <a href="/profile" class="user-profile"
+                style="text-decoration: none; display: flex; align-items: center; gap: 10px;">
+                {% if session.get('profile_photo') %}
+                <img src="/static/uploads/{{ session.get('profile_photo') }}" alt="Profile"
+                    style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary);">
+                {% else %}
+                <i class="fa-regular fa-user"></i>
+                {% endif %}
+                <span style="font-size: 0.9rem; font-family: 'Rajdhani', sans-serif;">{{ session.get('username')
+                    }}</span>
+            </a>
+            <a href="/logout"
+                style="margin-left: 15px; font-size: 0.9rem; color: #ff4444; text-decoration: none; font-family: 'Rajdhani', sans-serif;">
+                <i class="fa-solid fa-right-from-bracket"></i>
+            </a>
+        </div>
+        {% else %}
+        <a href="/login" class="user-profile" style="text-decoration: none;">
+            <i class="fa-solid fa-user"></i><span style="margin-left: 8px;">Login</span>
+        </a>
+        {% endif %}
+    </header>
+
+    <div class="main-container details-container">
+        <!-- Hardware Hero Section -->
+        <div class="game-hero">
+            <div class="hero-content">
+                <div class="hero-image-wrapper">
+                    <img src="{{ item.image }}" alt="{{ item.title }}" class="hero-image">
+                </div>
+                <div class="hero-details">
+                    <h1 class="game-title">{{ item.title }}</h1>
+                    <div class="game-meta">
+                        <span class="genre-tag"><i class="fa-solid fa-microchip"></i> {{ item.category }}</span>
+                        <span class="rating-tag"><i class="fa-solid fa-star"></i> {{ item.rating }}</span>
+                    </div>
+                    <p class="game-description">{{ item.description }}</p>
+
+                    <div class="price-action">
+                        <div class="price-tag">${{ item.price }}</div>
+                        <button class="buy-now-btn" onclick="showToast('Pre-orders opening soon!')">
+                            <i class="fa-solid fa-clock"></i> Coming Soon
+                        </button>
+                    </div>
+
+                    <div class="specs-box"
+                        style="margin-top: 30px; background: rgba(0,0,0,0.3); padding: 20px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);">
+                        <h3 style="color: var(--primary); margin-bottom: 15px;">Technical Specifications</h3>
+                        <ul style="list-style: none; padding: 0;">
+                            {% for spec in item.specs %}
+                            <li style="margin-bottom: 10px; display: flex; align-items: center;">
+                                <i class="fa-solid fa-check" style="color: var(--primary); margin-right: 10px;"></i>
+                                {{ spec }}
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/script.js"></script>
+</body>
+
+</html>

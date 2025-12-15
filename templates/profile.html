@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile - GamerZ</title>
+    <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Rajdhani:wght@400;600&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .profile-container {
+            max-width: 900px;
+            margin: 200px auto 50px;
+            padding: 50px;
+            background: rgba(30, 30, 30, 0.95);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+        }
+
+        .profile-header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 50px;
+            padding-bottom: 40px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+        }
+
+        .profile-left {
+            /* flex-shrink: 0; */
+            /* text-align: center; */
+        }
+
+        .profile-right {
+            /* flex-grow: 1; */
+            text-align: center;
+        }
+
+        .profile-photo {
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid var(--primary);
+            box-shadow: 0 0 30px rgba(0, 255, 65, 0.2);
+            margin-bottom: 20px;
+        }
+
+        .profile-placeholder {
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            background: #222;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 4px solid var(--primary);
+            font-size: 80px;
+            color: var(--primary);
+            margin-bottom: 20px;
+            box-shadow: 0 0 30px rgba(0, 255, 65, 0.2);
+        }
+
+        .user-name {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.5rem;
+            color: #fff;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+        }
+
+        .user-email {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1.2rem;
+            color: #aaa;
+            margin-bottom: 30px;
+        }
+
+        .upload-form {
+            margin-top: 10px;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .upload-btn {
+            display: inline-block;
+            background: rgba(0, 255, 65, 0.1);
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            padding: 8px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.9rem;
+            transition: 0.3s;
+        }
+
+        .upload-btn:hover {
+            background: var(--primary);
+            color: #000;
+            box-shadow: 0 0 20px rgba(0, 255, 65, 0.4);
+        }
+
+        .logout-btn {
+            display: inline-block;
+            margin-top: 20px;
+            color: #ff4444;
+            text-decoration: none;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.9rem;
+            border: 1px solid #ff4444;
+            padding: 8px 25px;
+            border-radius: 30px;
+            transition: 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: #ff4444;
+            color: #fff;
+            box-shadow: 0 0 20px rgba(255, 68, 68, 0.4);
+        }
+
+        /* Library Section */
+        .library-title {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--primary);
+            margin-bottom: 30px;
+            font-size: 1.8rem;
+        }
+
+        .library-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 25px;
+        }
+
+        .library-card {
+            background: rgba(0, 0, 0, 0.4);
+            padding: 15px;
+            border-radius: 15px;
+            transition: 0.3s;
+            border: 1px solid transparent;
+        }
+
+        .library-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .library-card img {
+            width: 100%;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            aspect-ratio: 3/4;
+            object-fit: cover;
+        }
+
+        .library-card h4 {
+            margin: 0 0 10px;
+            font-size: 1rem;
+            color: #fff;
+        }
+
+        .key-box {
+            background: rgba(0, 255, 65, 0.1);
+            padding: 8px;
+            border-radius: 5px;
+            font-family: monospace;
+            color: var(--primary);
+            font-size: 0.9rem;
+            word-break: break-all;
+            border: 1px dashed rgba(0, 255, 65, 0.3);
+        }
+
+        @media (max-width: 768px) {
+            .profile-header {
+                flex-direction: column;
+                text-align: center;
+                gap: 30px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="cursor-dot"></div>
+    <div class="cursor-outline"></div>
+
+    <header>
+        <div class="logo">
+            <a href="/"><img src="/static/assets/Logo.png" alt="GamerZ Logo"></a>
+        </div>
+        <div style="display: flex; align-items: center; gap: 20px;">
+            <div class="torch-toggle" id="themeToggle" title="Toggle Light Mode"><i
+                    class="fa-solid fa-fire-flame-curved"></i></div>
+            <a href="/" class="back-link"
+                style="text-decoration: none; font-family: 'Orbitron'; font-size: 0.9rem; display: flex; align-items: center; gap: 10px;">
+                <i class="fa-solid fa-arrow-left"></i> Back to Store
+            </a>
+        </div>
+    </header>
+
+    <div class="profile-container">
+
+        <div class="profile-header">
+            <div class="profile-left">
+                {% if user.profile_photo %}
+                <img src="/static/uploads/{{ user.profile_photo }}" alt="Profile Photo" class="profile-photo">
+                {% else %}
+                <div class="profile-placeholder">
+                    <i class="fa-regular fa-user"></i>
+                </div>
+                {% endif %}
+
+                <form action="/profile" method="POST" enctype="multipart/form-data" class="upload-form">
+                    <label for="file-upload" class="upload-btn">
+                        <i class="fa-solid fa-camera"></i> Change Photo
+                    </label>
+                    <input id="file-upload" type="file" name="profile_photo" class="file-input"
+                        onchange="this.form.submit()">
+                </form>
+            </div>
+
+            <div class="profile-right">
+                <h1 class="user-name">{{ user.username }}</h1>
+                <p class="user-email">{{ user.email }}</p>
+
+                {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                <div style="margin-bottom: 20px; color: var(--primary);">
+                    {% for message in messages %}
+                    <p><i class="fa-solid fa-check-circle"></i> {{ message }}</p>
+                    {% endfor %}
+                </div>
+                {% endif %}
+                {% endwith %}
+
+                <a href="/logout" class="logout-btn">Logout</a>
+            </div>
+        </div>
+
+        {% if library %}
+        <div>
+            <h2 class="library-title">My Library</h2>
+            <div class="library-grid">
+                {% for item in library %}
+                <div class="library-card">
+                    <img src="{{ item.image }}" alt="{{ item.title }}">
+                    <h4>{{ item.title }}</h4>
+                    <div class="key-box">
+                        <i class="fa-solid fa-key"></i> {{ item.key }}
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <script src="/static/script.js"></script>
+</body>
+
+</html>

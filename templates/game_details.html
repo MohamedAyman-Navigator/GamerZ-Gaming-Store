@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>{{ game.title }} - GamerZ</title>
+    <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Rajdhani:wght400;600;700&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="/static/style.css?v=2">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.dashjs.org/latest/dash.all.min.js"></script>
+
+    <style>
+        /* --- PAGE SPECIFIC OVERRIDES --- */
+
+        .details-container {
+            display: flex;
+            height: 100vh;
+            padding-top: 200px;
+            padding-left: 5%;
+            padding-right: 5%;
+            gap: 50px;
+            align-items: center;
+            font-family: 'Rajdhani', sans-serif;
+        }
+
+        /* --- MEDIA CAROUSEL --- */
+        #media-carousel {
+            position: relative;
+            width: 100%;
+            /* Fills the flex-1 column */
+            height: 55vh;
+            /* Fixed height relative to viewport */
+            max-height: 600px;
+            /* Cap it for huge screens */
+            border-radius: 20px;
+            overflow: hidden;
+            background: #000;
+            border: 2px solid var(--primary);
+            box-shadow: 0 0 30px rgba(0, 255, 65, 0.2);
+        }
+
+        .media-slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+            pointer-events: none;
+            /* Let clicks pass through if needed */
+        }
+
+        .media-slide.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .media-slide video,
+        .media-slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            /* Keep aspect ratio */
+        }
+
+        /* Navigation Buttons */
+        .nav-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0, 0, 0, 0.5);
+            color: var(--primary);
+            border: none;
+            font-size: 2rem;
+            padding: 10px 15px;
+            cursor: pointer;
+            z-index: 10;
+            border-radius: 5px;
+            transition: 0.3s;
+            opacity: 0;
+            /* Hidden by default */
+        }
+
+        #media-carousel:hover .nav-btn {
+            opacity: 1;
+            /* Show on hover */
+        }
+
+        .nav-btn:hover {
+            background: var(--primary);
+            color: black;
+        }
+
+        .prev-media {
+            left: 10px;
+        }
+
+        .next-media {
+            right: 10px;
+        }
+
+        /* Dots */
+        .media-dots {
+            position: absolute;
+            bottom: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+            z-index: 10;
+            opacity: 0;
+            /* Hidden by default */
+            transition: 0.3s;
+        }
+
+        #media-carousel:hover .media-dots {
+            opacity: 1;
+            /* Show on hover */
+        }
+
+        .media-dot {
+            width: 12px;
+            height: 12px;
+            background: rgba(255, 255, 255, 0.8);
+            /* Higher visibility */
+            border-radius: 50%;
+            cursor: none;
+            /* Hide default cursor */
+            transition: 0.3s;
+            box-shadow: 0 0 2px black;
+        }
+
+        .media-dot.active {
+            background: var(--primary);
+            transform: scale(1.2);
+            box-shadow: 0 0 5px var(--primary);
+        }
+
+        /* Right Side Info */
+        .info-column {
+            flex: 1;
+            color: white;
+            font-family: 'Rajdhani', sans-serif;
+        }
+
+        .game-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3.5rem;
+            color: var(--primary);
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px var(--primary);
+        }
+
+        .badges {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .badge {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 5px 15px;
+            border-radius: 5px;
+            border: 1px solid var(--secondary);
+            font-weight: bold;
+        }
+
+        .description {
+            font-size: 1.2rem;
+            line-height: 1.6;
+            margin-bottom: 40px;
+            color: #ccc;
+        }
+
+        .price-tag {
+            font-size: 2.5rem;
+            color: white;
+            font-weight: bold;
+            margin-bottom: 20px;
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 20px;
+        }
+
+        /* Button Styles */
+        .buy-now-btn {
+            background: var(--primary);
+            border: none;
+            color: black;
+            padding: 15px 50px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 10px;
+            box-shadow: 0 0 20px var(--primary);
+            transition: 0.3s;
+        }
+
+        .buy-now-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .back-btn {
+            background: transparent;
+            border: 1px solid white;
+            color: white;
+            padding: 15px 30px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            border-radius: 10px;
+            transition: 0.3s;
+            text-decoration: none;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Recommended Games Grid */
+        .recommended-section {
+            padding: 50px 5%;
+        }
+
+        .recommended-section h2 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2rem;
+            color: white;
+            margin-bottom: 30px;
+            border-left: 5px solid var(--primary);
+            padding-left: 15px;
+        }
+
+        .recommended-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 25px;
+        }
+
+        .recommended-card {
+            position: relative;
+            height: 320px;
+            border-radius: 15px;
+            overflow: hidden;
+            text-decoration: none;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: block;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .recommended-grid .game-card {
+            min-width: 0;
+            margin: 0;
+            height: 320px;
+            /* Match recommended-card height */
+            background: transparent;
+            /* Override game-card background */
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            /* Match recommended-card border */
+            box-shadow: none;
+            /* Reset initial shadow */
+        }
+
+        .recommended-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 10px 30px rgba(0, 255, 65, 0.2);
+            border-color: var(--primary);
+            z-index: 2;
+        }
+
+        .rec-cover {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .recommended-card:hover .rec-cover {
+            transform: scale(1.1);
+        }
+
+        .rec-info {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 20px 15px;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.95) 0%, rgba(0, 0, 0, 0.8) 60%, transparent 100%);
+            color: white;
+            transform: translateY(10px);
+            transition: transform 0.3s ease;
+        }
+
+        .recommended-card:hover .rec-info {
+            transform: translateY(0);
+        }
+
+        .rec-info h3 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1rem;
+            margin-bottom: 5px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            color: #fff;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+        }
+
+        .rec-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9rem;
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: bold;
+        }
+
+        .rec-rating {
+            color: #ffd700;
+        }
+
+        .rec-price {
+            color: var(--primary);
+        }
+
+        .rec-glow {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            box-shadow: inset 0 0 20px rgba(0, 255, 65, 0);
+            transition: box-shadow 0.3s ease;
+            pointer-events: none;
+        }
+
+        .recommended-card:hover .rec-glow {
+            box-shadow: inset 0 0 20px rgba(0, 255, 65, 0.3);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="cursor-dot"></div>
+    <div class="cursor-outline"></div>
+
+    <header>
+        <div class="logo"><a href="/"><img src="/static/assets/Logo.png" alt="GamerZ"></a></div>
+        <div class="search-bar">
+            <input type="text" id="search-input" placeholder="Search games..." autocomplete="off">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <div id="search-results" class="search-results-dropdown"></div>
+        </div>
+
+        <div class="torch-toggle" id="themeToggle" title="Toggle Light Mode">
+            <i class="fa-solid fa-fire-flame-curved"></i>
+        </div>
+
+        <a href="/cart" class="cart-wrapper">
+            <i class="fa-solid fa-cart-shopping"></i>
+            <span id="cart-count">0</span>
+        </a>
+
+        {% if session.get('username') %}
+        <div style="display: flex; align-items: center;">
+            <a href="/profile" class="user-profile"
+                style="text-decoration: none; display: flex; align-items: center; gap: 10px;">
+                {% if session.get('profile_photo') %}
+                <img src="/static/uploads/{{ session.get('profile_photo') }}" alt="Profile"
+                    style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary);">
+                {% else %}
+                <i class="fa-regular fa-user"></i>
+                {% endif %}
+                <span style="font-size: 0.9rem; font-family: 'Rajdhani', sans-serif;">{{ session.get('username')
+                    }}</span>
+            </a>
+            <a href="/logout"
+                style="margin-left: 15px; font-size: 0.9rem; color: #ff4444; text-decoration: none; font-family: 'Rajdhani', sans-serif;"
+                title="Logout">
+                <i class="fa-solid fa-right-from-bracket"></i>
+            </a>
+        </div>
+        {% else %}
+        <a href="/login" class="user-profile" style="text-decoration: none;">
+            <i class="fa-solid fa-user"></i><span style="margin-left: 8px;">Login</span>
+        </a>
+        {% endif %}
+    </header>
+
+    <div class="details-container">
+        <div class="visual-column" id="media-carousel">
+            <!-- Slide 0: Trailer (Only if exists) -->
+            {% if game.trailer %}
+            <div class="media-slide active" data-type="video">
+                <video src="{{ game.trailer }}" muted loop id="main-trailer"></video>
+            </div>
+            {% endif %}
+
+            {% if extras and extras.screenshots %}
+            {% for shot in extras.screenshots %}
+            <div class="media-slide {% if not game.trailer and loop.first %}active{% endif %}" data-type="image">
+                <img src="{{ shot }}" alt="Screenshot">
+            </div>
+            {% endfor %}
+            {% endif %}
+
+            <button class="nav-btn prev-media">‹</button>
+            <button class="nav-btn next-media">›</button>
+
+            <div class="media-dots">
+                <!-- Dots injected via JS -->
+            </div>
+        </div>
+
+        <div class="info-column">
+            <h1 class="game-title">{{ game.title }}</h1>
+
+            <div class="badges">
+                <span class="badge">{{ game.genre }}</span>
+                <span class="badge">{{ game.rating }}</span>
+                <span class="badge">PC / PS5</span>
+            </div>
+
+            <p class="description">{{ game.description }}</p>
+
+            {% if game.original_price and game.original_price|float > game.price|float %}
+            <div class="sale-price-container" style="margin-bottom: 20px;">
+                <span class="original-price">${{ game.original_price }}</span>
+                <div class="price-tag" style="margin-bottom: 0;">${{ game.price }}</div>
+            </div>
+            {% else %}
+            <div class="price-tag">${{ game.price }}</div>
+            {% endif %}
+
+            <div class="action-buttons">
+                {% if game.stock_quantity is defined and game.stock_quantity <= 0 %} <button class="buy-now-btn"
+                    style="background: #dc3545; box-shadow: 0 0 20px rgba(220, 53, 69, 0.5); cursor: not-allowed;"
+                    disabled>Out of Stock</button>
+                    {% else %}
+                    <button class="buy-now-btn" onclick="addToCart(Number('{{ game.id }}'))">Add to Cart</button>
+                    {% endif %}
+                    <a href="/" class="back-btn">Back to Store</a>
+            </div>
+        </div>
+    </div>
+
+
+    {% if extras %}
+    <div class="extras-container">
+        {% if extras.dlcs %}
+        <div class="extras-category">
+            <h2>DLCs & Expansions</h2>
+            <div class="extras-grid">
+                {% for item in extras.dlcs %}
+                <div class="extra-card">
+                    {% if item.image %}
+                    <img src="{{ item.image }}" alt="{{ item.title }}">
+                    {% endif %}
+                    <div class="extra-info">
+                        <h4>{{ item.title }}</h4>
+                        <p>{{ item.desc }}</p>
+                        <div
+                            style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px;">
+                            {% if item.original_price and item.original_price|float > item.price|float %}
+                            <div class="sale-price-container">
+                                <span class="original-price">${{ item.original_price }}</span>
+                                <span class="extra-price" style="color: #00ff41;">${{ item.price }}</span>
+                            </div>
+                            {% else %}
+                            <span class="regular-price">${{ item.price }}</span>
+                            {% endif %}
+
+                            {% if game.id in owned_game_ids %}
+                            <button class="buy-now-btn" onclick="addToCart('{{ item.id }}')"
+                                style="padding: 5px 15px; font-size: 0.8rem; width: auto; margin-top: 0;">
+                                Add
+                            </button>
+                            {% else %}
+                            <span style="color: #ff4444; font-size: 0.8rem; font-weight: bold;">Base Game
+                                Required</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        {% if extras.editions %}
+        <div class="extras-category">
+            <h2>Editions</h2>
+            <div class="extras-grid">
+                {% for item in extras.editions %}
+                <div class="extra-card">
+                    {% if item.image %}
+                    <img src="{{ item.image }}" alt="{{ item.title }}">
+                    {% endif %}
+                    <div class="extra-info">
+                        <h4>{{ item.title }}</h4>
+                        <p>{{ item.desc }}</p>
+                        <div
+                            style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px;">
+                            {% if item.original_price and item.original_price|float > item.price|float %}
+                            <div class="sale-price-container">
+                                <span class="original-price">${{ item.original_price }}</span>
+                                <span class="extra-price" style="color: #00ff41;">${{ item.price }}</span>
+                            </div>
+                            {% else %}
+                            <span class="regular-price">${{ item.price }}</span>
+                            {% endif %}
+                            <button class="buy-now-btn" onclick="addToCart('{{ item.id }}')"
+                                style="padding: 5px 15px; font-size: 0.8rem; width: auto; margin-top: 0;">
+                                Add
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        {% if extras.addons %}
+        <div class="extras-category">
+            <h2>Add-ons</h2>
+            <div class="extras-grid">
+                {% for item in extras.addons %}
+                <div class="extra-card">
+                    <div class="extra-info">
+                        <h4>{{ item.title }}</h4>
+                        <p>{{ item.desc }}</p>
+                        <span class="regular-price">{{ item.price }}</span>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        {% if extras.specs %}
+        <div class="extras-category">
+            <h2>System Requirements</h2>
+            <div class="specs-container">
+                <div class="specs-column">
+                    <h3>Minimum</h3>
+                    <ul>
+                        <li><strong>OS:</strong> {{ extras.specs.min.os }}</li>
+                        <li><strong>Processor:</strong> {{ extras.specs.min.cpu }}</li>
+                        <li><strong>Memory:</strong> {{ extras.specs.min.ram }}</li>
+                        <li><strong>Graphics:</strong> {{ extras.specs.min.gpu }}</li>
+                        <li><strong>Storage:</strong> {{ extras.specs.min.storage }}</li>
+                    </ul>
+                </div>
+                <div class="specs-column">
+                    <h3>Recommended</h3>
+                    <ul>
+                        <li><strong>OS:</strong> {{ extras.specs.rec.os }}</li>
+                        <li><strong>Processor:</strong> {{ extras.specs.rec.cpu }}</li>
+                        <li><strong>Memory:</strong> {{ extras.specs.rec.ram }}</li>
+                        <li><strong>Graphics:</strong> {{ extras.specs.rec.gpu }}</li>
+                        <li><strong>Storage:</strong> {{ extras.specs.rec.storage }}</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <!-- Game Hover Popup -->
+    <div id="game-hover-popup" class="game-hover-popup">
+        <div class="popup-media">
+            <img src="" alt="Game Cover" class="popup-image">
+            <video src="" muted loop class="popup-video"></video>
+        </div>
+        <div class="popup-content">
+            <div class="popup-header">
+                <h3 class="popup-title">Game Title</h3>
+                <span class="popup-release">2024</span>
+            </div>
+            <div class="popup-meta">
+                <div class="popup-rating"><i class="fa-solid fa-star"></i> <span>9.5</span></div>
+                <span class="popup-genre">Action</span>
+            </div>
+            <p class="popup-description">Game description goes here...</p>
+        </div>
+    </div>
+
+    {% if recommended_games %}
+    <div class="recommended-section">
+        <h2>Recommended Games</h2>
+        <div class="recommended-grid">
+            {% for rec_game in recommended_games %}
+            <a href="/game/{{ rec_game.id }}" class="recommended-card game-card" data-id="{{ rec_game.id }}"
+                data-title="{{ rec_game.title }}" data-image="{{ rec_game.image }}"
+                data-landscape="{{ rec_game.landscape_image }}" data-trailer="{{ rec_game.trailer }}"
+                data-description="{{ rec_game.description }}" data-rating="{{ rec_game.rating }}"
+                data-release="{{ rec_game.release_date }}" data-genre="{{ rec_game.genre }}"
+                data-price="{{ rec_game.price }}">
+                <img src="{{ rec_game.image }}" alt="{{ rec_game.title }}" class="rec-cover">
+                <div class="rec-info">
+                    <h3>{{ rec_game.title }}</h3>
+                    <div class="rec-meta">
+                        <span class="rec-rating"><i class="fa-solid fa-star"></i> {{ rec_game.rating }}</span>
+                        <span class="rec-price">${{ rec_game.price }}</span>
+                    </div>
+                </div>
+                <div class="rec-glow"></div>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <script src="/static/script.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const video = document.getElementById("main-trailer");
+            if (video) {
+                const src = video.getAttribute("src");
+                if (src && src.includes(".mpd")) {
+                    const player = dashjs.MediaPlayer().create();
+                    player.initialize(video, src, true);
+                    player.updateSettings({
+                        'streaming': {
+                            'autoplay': true,
+                            'text': {
+                                'defaultEnabled': false
+                            }
+                        }
+                    });
+                    video.muted = true; // Ensure muted for autoplay
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

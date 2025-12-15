@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - GamerZ</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Rajdhani:wght@400;600&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+    <style>
+        .admin-container {
+            padding-top: 150px;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding-left: 20px;
+            padding-right: 20px;
+        }
+
+        .admin-header {
+            background: linear-gradient(135deg, rgba(0, 255, 65, 0.1) 0%, rgba(0, 0, 0, 0.3) 100%);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 40px;
+            border: 1px solid rgba(0, 255, 65, 0.2);
+            backdrop-filter: blur(10px);
+        }
+
+        .admin-header h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 10px;
+            text-shadow: 0 0 20px rgba(0, 255, 65, 0.5);
+        }
+
+        .admin-header p {
+            color: var(--light);
+            font-size: 1.1rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), transparent);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary);
+            box-shadow: 0 10px 30px rgba(0, 255, 65, 0.2);
+        }
+
+        .stat-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .stat-icon {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 15px;
+            text-shadow: 0 0 15px rgba(0, 255, 65, 0.5);
+        }
+
+        .stat-value {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.5rem;
+            color: white;
+            margin-bottom: 5px;
+            white-space: nowrap;
+        }
+
+        /* Smaller font for Total Value card to fit long numbers */
+        .stat-card:nth-child(2) .stat-value {
+            font-size: 2rem;
+        }
+
+        .stat-label {
+            color: var(--light);
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .admin-actions {
+            margin-bottom: 30px;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .admin-btn {
+            background: var(--primary);
+            color: black;
+            padding: 12px 30px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            border: 2px solid var(--primary);
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .admin-btn:hover {
+            background: transparent;
+            color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(0, 255, 65, 0.3);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            box-shadow: 0 5px 20px rgba(255, 255, 255, 0.1);
+        }
+
+        .games-table-container {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            overflow-x: auto;
+        }
+
+        .games-table-container h2 {
+            font-family: 'Orbitron', sans-serif;
+            color: white;
+            margin-bottom: 25px;
+            font-size: 1.8rem;
+        }
+
+        .games-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 10px;
+        }
+
+        .games-table thead th {
+            background: rgba(0, 255, 65, 0.1);
+            color: var(--primary);
+            padding: 15px;
+            text-align: left;
+            font-family: 'Orbitron', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.9rem;
+            border-bottom: 2px solid var(--primary);
+        }
+
+        .games-table tbody tr {
+            background: rgba(255, 255, 255, 0.02);
+            transition: all 0.3s ease;
+        }
+
+        .games-table tbody tr:hover {
+            background: rgba(0, 255, 65, 0.05);
+            transform: scale(1.01);
+        }
+
+        .games-table tbody td {
+            padding: 15px;
+            color: var(--light);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .game-image-thumb {
+            width: 80px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 1px solid rgba(0, 255, 65, 0.2);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-edit,
+        .btn-delete {
+            padding: 8px 15px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .btn-edit {
+            background: rgba(0, 150, 255, 0.2);
+            color: #00aaff;
+            border: 1px solid rgba(0, 150, 255, 0.3);
+        }
+
+        .btn-edit:hover {
+            background: rgba(0, 150, 255, 0.3);
+            box-shadow: 0 0 15px rgba(0, 150, 255, 0.3);
+        }
+
+        .btn-delete {
+            background: rgba(255, 50, 50, 0.2);
+            color: #ff5555;
+            border: 1px solid rgba(255, 50, 50, 0.3);
+        }
+
+        .btn-delete:hover {
+            background: rgba(255, 50, 50, 0.3);
+            box-shadow: 0 0 15px rgba(255, 50, 50, 0.3);
+        }
+
+        .price-badge {
+            background: rgba(0, 255, 65, 0.1);
+            color: var(--primary);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: bold;
+            font-size: 0.95rem;
+        }
+
+        .genre-tag {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--light);
+            padding: 3px 10px;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            display: inline-block;
+            margin-right: 5px;
+            margin-top: 3px;
+        }
+
+        /* Light Mode Overrides */
+        body.light-mode .admin-header {
+            background: linear-gradient(135deg, rgba(0, 179, 45, 0.1) 0%, rgba(255, 255, 255, 0.8) 100%);
+            border-color: rgba(0, 179, 45, 0.2);
+        }
+
+        body.light-mode .stat-card,
+        body.light-mode .games-table-container {
+            background: rgba(255, 255, 255, 0.8);
+            border-color: rgba(0, 0, 0, 0.1);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        body.light-mode .stat-value {
+            color: #333;
+        }
+
+        body.light-mode .games-table tbody tr {
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        body.light-mode .games-table tbody tr:hover {
+            background: rgba(0, 179, 45, 0.1);
+        }
+
+        body.light-mode .games-table tbody td {
+            color: #333;
+            border-bottom-color: rgba(0, 0, 0, 0.1);
+        }
+
+        body.light-mode .games-table h2,
+        body.light-mode .stat-label {
+            color: #333;
+            font-weight: 600;
+        }
+
+        body.light-mode .admin-header h1 {
+            color: #1a1a1a;
+            text-shadow: 0 0 20px rgba(0, 179, 45, 0.3);
+        }
+
+        body.light-mode .admin-header p {
+            color: #333;
+            font-weight: 500;
+        }
+
+        body.light-mode .games-table-container h2 {
+            color: #1a1a1a;
+        }
+
+        body.light-mode .btn-secondary {
+            background: #333;
+            color: white;
+            border-color: #333;
+        }
+
+        body.light-mode .btn-secondary:hover {
+            background: #000;
+            border-color: #000;
+            color: var(--primary);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="cursor-dot"></div>
+    <div class="cursor-outline"></div>
+
+    <header>
+        <div class="logo">
+            <a href="/"><img src="/static/assets/Logo.png" alt="GamerZ Logo"></a>
+        </div>
+        <div class="admin-page-title">
+            <h2 style="font-family: 'Orbitron', sans-serif; color: var(--primary); margin: 0;">
+                <i class="fa-solid fa-lock"></i> ADMIN CONTROL CENTER
+            </h2>
+        </div>
+        <div style="display: flex; align-items: center; gap: 20px;">
+            <div class="torch-toggle" id="themeToggle" title="Toggle Light Mode"><i
+                    class="fa-solid fa-fire-flame-curved"></i></div>
+            <a href="/" class="user-profile" style="text-decoration: none;">
+                <i class="fa-solid fa-home"></i>
+                <span>Back to Home</span>
+            </a>
+        </div>
+    </header>
+
+    <div class="admin-container">
+        <div class="admin-header">
+            <h1><i class="fa-solid fa-gauge-high"></i> Dashboard</h1>
+            <p>Welcome back, Admin. Manage your game inventory with full control.</p>
+        </div>
+
+        <!-- Statistics Cards -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fa-solid fa-gamepad"></i></div>
+                <div class="stat-value">{{ stats.total_games }}</div>
+                <div class="stat-label">Total Games</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fa-solid fa-dollar-sign"></i></div>
+                <div class="stat-value">${{ "{:,.2f}".format(stats.total_value) }}</div>
+                <div class="stat-label">Total Value</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fa-solid fa-chart-line"></i></div>
+                <div class="stat-value">${{ "%.2f"|format(stats.avg_price) }}</div>
+                <div class="stat-label">Average Price</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fa-solid fa-trophy"></i></div>
+                <div class="stat-value">${{ "%.2f"|format(stats.max_price) }}</div>
+                <div class="stat-label">Highest Price</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fa-solid fa-star-half-stroke"></i></div>
+                <div class="stat-value">{{ "%.1f"|format(stats.avg_rating) }}</div>
+                <div class="stat-label">Average Rating</div>
+            </div>
+        </div>
+
+        <!-- Charts Section -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 25px; margin-bottom: 40px;">
+            <!-- Genre Distribution Chart -->
+            <div class="games-table-container" style="padding: 30px;">
+                <h2 style="margin-bottom: 20px;"><i class="fa-solid fa-chart-pie"></i> Genre Distribution</h2>
+                <canvas id="genreChart" style="max-height: 300px;"></canvas>
+            </div>
+
+            <!-- Top 5 Most Expensive Chart -->
+            <div class="games-table-container" style="padding: 30px;">
+                <h2 style="margin-bottom: 20px;"><i class="fa-solid fa-ranking-star"></i> Top 5 Most Expensive</h2>
+                <canvas id="topGamesChart" style="max-height: 300px;"></canvas>
+            </div>
+
+            <!-- Rating Distribution Chart -->
+            <div class="games-table-container" style="padding: 30px;">
+                <h2 style="margin-bottom: 20px;"><i class="fa-solid fa-star"></i> Rating Distribution</h2>
+                <canvas id="ratingChart" style="max-height: 300px;"></canvas>
+            </div>
+
+            <!-- Top 5 Highest Rated Games Chart -->
+            <div class="games-table-container" style="padding: 30px;">
+                <h2 style="margin-bottom: 20px;"><i class="fa-solid fa-trophy"></i> Top 5 Highest Rated</h2>
+                <canvas id="topRatedChart" style="max-height: 300px;"></canvas>
+            </div>
+        </div>
+
+        <!-- Admin Actions -->
+        <div class="admin-actions">
+            <a href="/admin/add" class="admin-btn">
+                <i class="fa-solid fa-plus"></i>
+                Add New Game
+            </a>
+            <a href="/" class="admin-btn btn-secondary">
+                <i class="fa-solid fa-eye"></i>
+                View Store
+            </a>
+        </div>
+
+        <!-- Games Table -->
+        <div class="games-table-container">
+            <h2><i class="fa-solid fa-list"></i> Game Inventory ({{ games|length }} Items)</h2>
+            <table class="games-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Image</th>
+                        <th>Title</th>
+                        <th>Genre</th>
+                        <th>Price</th>
+                        <th>Rating</th>
+                        <th>Stock</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for game in games %}
+                    <tr>
+                        <td>{{ game.id }}</td>
+                        <td><img src="{{ game.landscape_image }}" alt="{{ game.title }}" class="game-image-thumb"></td>
+                        <td style="font-weight: 600;">{{ game.title }}</td>
+                        <td>{{ game.genre }}</td>
+                        <td>${{ "%.2f"|format(game.price) }}</td>
+                        <td>
+                            {% if game.rating %}
+                            {% if game.rating is number %}
+                            ⭐ {{ "%.1f"|format(game.rating) }}
+                            {% else %}
+                            <span style="color: #666;">{{ game.rating }}</span>
+                            {% endif %}
+                            {% else %}
+                            <span style="color: #666;">N/A</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% set stock = game.stock_quantity or 0 %}
+                            {% if stock == 0 %}
+                            <span
+                                style="background: rgba(255, 50, 50, 0.2); color: #ff3232; padding: 4px 8px; border-radius: 4px; font-size: 0.85rem; font-weight: bold;">Out
+                                of Stock</span>
+                            {% elif stock < 10 %} <span
+                                style="background: rgba(255, 165, 0, 0.2); color: #ffa500; padding: 4px 8px; border-radius: 4px; font-size: 0.85rem;">
+                                {{ stock }} left</span>
+                                {% else %}
+                                <span style="color: #00ff41;">{{ stock }}</span>
+                                {% endif %}
+                        </td>
+                        <td>
+                            <div class="action-buttons">
+                                <a href="/admin/edit/{{ game.id }}" class="btn-edit">
+                                    <i class="fa-solid fa-pen-to-square"></i> Edit
+                                </a>
+                                <form method="POST" action="/admin/delete/{{ game.id }}" style="display: inline;"
+                                    onsubmit="return confirm('Are you sure you want to delete {{ game.title }}?');">
+                                    <button type="submit" class="btn-delete">
+                                        <i class="fa-solid fa-trash"></i> Delete
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+
+    <!-- Data Injection for Charts (Hidden from Linter) -->
+    <script id="chart-data" type="application/json">
+        {
+            "genre_labels": {{ stats.genre_stats.keys() | list | tojson }},
+            "genre_data": {{ stats.genre_stats.values() | list | tojson }},
+            "top_games": {{ stats.top_games | tojson }},
+            "rating_labels": {{ stats.rating_dist.keys() | list | tojson }},
+            "rating_data": {{ stats.rating_dist.values() | list | tojson }},
+            "top_rated_games": {{ stats.top_rated_games | tojson }}
+        }
+    </script>
+
+    <script>
+        // Parse the data from the JSON block
+        const chartData = JSON.parse(document.getElementById('chart-data').textContent);
+
+        // Theme Color Helper
+        function getThemeColors() {
+            // Check both classList AND localStorage to avoid race condition on load
+            const isLight = document.body.classList.contains('light-mode') || localStorage.getItem('theme') === 'light';
+            return {
+                textColor: isLight ? '#1a1a1a' : '#e0e0e0',
+                gridColor: isLight ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.1)',
+                tooltipBg: isLight ? 'rgba(255, 255, 255, 0.95)' : 'rgba(0, 0, 0, 0.8)',
+                tooltipText: isLight ? '#1a1a1a' : '#e0e0e0'
+            };
+        }
+
+        let genreChart, topGamesChart, ratingChart, topRatedChart;
+
+        function initCharts() {
+            const colors = getThemeColors();
+            const commonOptions = {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            color: colors.textColor,
+                            font: { family: 'Rajdhani', size: 14 },
+                            padding: 15
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: colors.tooltipBg,
+                        titleColor: '#00ff41',
+                        bodyColor: colors.tooltipText,
+                        borderColor: '#00ff41',
+                        borderWidth: 1,
+                        padding: 12,
+                        displayColors: true
+                    }
+                },
+                scales: {
+                    x: {
+                        ticks: { color: colors.textColor, font: { family: 'Rajdhani' } },
+                        grid: { color: colors.gridColor }
+                    },
+                    y: {
+                        ticks: { color: colors.textColor, font: { family: 'Rajdhani', size: 12 } },
+                        grid: { color: colors.gridColor }
+                    }
+                }
+            };
+
+            // Genre Distribution Pie Chart
+            if (genreChart) genreChart.destroy();
+            const genreCtx = document.getElementById('genreChart').getContext('2d');
+            genreChart = new Chart(genreCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: chartData.genre_labels,
+                    datasets: [{
+                        data: chartData.genre_data,
+                        backgroundColor: [
+                            'rgba(0, 255, 65, 0.8)', 'rgba(255, 100, 0, 0.8)',
+                            'rgba(0, 150, 255, 0.8)', 'rgba(255, 200, 0, 0.8)',
+                            'rgba(200, 0, 255, 0.8)'
+                        ],
+                        borderColor: [
+                            'rgba(0, 255, 65, 1)', 'rgba(255, 100, 0, 1)',
+                            'rgba(0, 150, 255, 1)', 'rgba(255, 200, 0, 1)',
+                            'rgba(200, 0, 255, 1)'
+                        ],
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    ...commonOptions,
+                    scales: {} // No scales for pie chart
+                }
+            });
+
+            // Top 5 Games Bar Chart
+            if (topGamesChart) topGamesChart.destroy();
+            const topGamesCtx = document.getElementById('topGamesChart').getContext('2d');
+            const topGames = chartData.top_games;
+            topGamesChart = new Chart(topGamesCtx, {
+                type: 'bar',
+                data: {
+                    labels: topGames.map(g => g.title.length > 15 ? g.title.substring(0, 15) + '...' : g.title),
+                    datasets: [{
+                        label: 'Price ($)',
+                        data: topGames.map(g => g.price),
+                        backgroundColor: 'rgba(0, 255, 65, 0.6)',
+                        borderColor: 'rgba(0, 255, 65, 1)',
+                        borderWidth: 2,
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    ...commonOptions,
+                    indexAxis: 'y',
+                    plugins: {
+                        ...commonOptions.plugins,
+                        legend: { display: false },
+                        tooltip: {
+                            ...commonOptions.plugins.tooltip,
+                            callbacks: { label: function (context) { return '$' + context.parsed.x.toFixed(2); } }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            ...commonOptions.scales.x,
+                            ticks: {
+                                ...commonOptions.scales.x.ticks,
+                                callback: function (value) { return '$' + value; }
+                            }
+                        },
+                        y: { ...commonOptions.scales.y, grid: { display: false } }
+                    }
+                }
+            });
+
+            // Rating Distribution Chart
+            if (ratingChart) ratingChart.destroy();
+            const ratingCtx = document.getElementById('ratingChart').getContext('2d');
+            ratingChart = new Chart(ratingCtx, {
+                type: 'bar',
+                data: {
+                    labels: chartData.rating_labels,
+                    datasets: [{
+                        label: 'Games',
+                        data: chartData.rating_data,
+                        backgroundColor: [
+                            'rgba(255, 215, 0, 0.7)', 'rgba(0, 255, 65, 0.7)',
+                            'rgba(0, 150, 255, 0.7)', 'rgba(255, 165, 0, 0.7)',
+                            'rgba(255, 50, 50, 0.7)'
+                        ],
+                        borderColor: [
+                            'rgba(255, 215, 0, 1)', 'rgba(0, 255, 65, 1)',
+                            'rgba(0, 150, 255, 1)', 'rgba(255, 165, 0, 1)',
+                            'rgba(255, 50, 50, 1)'
+                        ],
+                        borderWidth: 2,
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    ...commonOptions,
+                    plugins: {
+                        ...commonOptions.plugins,
+                        legend: { display: false },
+                        tooltip: {
+                            ...commonOptions.plugins.tooltip,
+                            callbacks: { label: function (context) { return context.parsed.y + ' games'; } }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            ...commonOptions.scales.y,
+                            beginAtZero: true,
+                            ticks: { ...commonOptions.scales.y.ticks, stepSize: 1 }
+                        },
+                        x: { ...commonOptions.scales.x, grid: { display: false } }
+                    }
+                }
+            });
+
+            // Top 5 Highest Rated Games Chart
+            if (topRatedChart) topRatedChart.destroy();
+            const topRatedCtx = document.getElementById('topRatedChart').getContext('2d');
+            const topRatedGames = chartData.top_rated_games;
+            topRatedChart = new Chart(topRatedCtx, {
+                type: 'bar',
+                data: {
+                    labels: topRatedGames.map(g => g.title.length > 15 ? g.title.substring(0, 15) + '...' : g.title),
+                    datasets: [{
+                        label: 'Rating',
+                        data: topRatedGames.map(g => g.rating),
+                        backgroundColor: 'rgba(255, 215, 0, 0.7)',
+                        borderColor: 'rgba(255, 215, 0, 1)',
+                        borderWidth: 2,
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    ...commonOptions,
+                    indexAxis: 'y',
+                    plugins: {
+                        ...commonOptions.plugins,
+                        legend: { display: false },
+                        tooltip: {
+                            ...commonOptions.plugins.tooltip,
+                            titleColor: '#FFD700',
+                            borderColor: '#FFD700',
+                            callbacks: { label: function (context) { return '⭐ ' + context.parsed.x.toFixed(1) + '/10'; } }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            ...commonOptions.scales.x,
+                            max: 10, min: 0,
+                            ticks: { ...commonOptions.scales.x.ticks, stepSize: 2 }
+                        },
+                        y: { ...commonOptions.scales.y, grid: { display: false } }
+                    }
+                }
+            });
+        }
+
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', () => {
+            initCharts();
+        });
+
+        // Listen for theme toggle
+        const themeToggleBtn = document.getElementById('themeToggle');
+        if (themeToggleBtn) {
+            themeToggleBtn.addEventListener('click', () => {
+                // Wait for class toggle to happen in script.js
+                setTimeout(initCharts, 50);
+            });
+        }
+    </script>
+    <script src="/static/script.js"></script>
+
+</body>
+
+</html>

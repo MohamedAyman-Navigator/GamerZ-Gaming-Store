@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GamerZ - The Ultimate Store</title>
+    <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Rajdhani:wght@400;600;400&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="/static/style.css">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+</head>
+
+<body>
+
+    <div class="cursor-dot"></div>
+    <div class="cursor-outline"></div>
+
+    <div id="loader">
+        <div class="spinner"></div>
+        <h2 style="font-family: 'Orbitron', sans-serif; margin-top: 20px; color: var(--primary);">LOADING SYSTEM...</h2>
+    </div>
+
+    <header>
+        <div class="logo">
+            <a href="/"><img src="/static/assets/Logo.png" alt="GamerZ Logo"></a>
+        </div>
+        <div class="search-bar">
+            <input type="text" id="search-input" placeholder="Search games..." autocomplete="off"><i
+                class="fa-solid fa-magnifying-glass"></i>
+            <div id="search-results" class="search-results-dropdown"></div>
+        </div>
+        <div class="torch-toggle" id="themeToggle" title="Toggle Light Mode"><i
+                class="fa-solid fa-fire-flame-curved"></i></div>
+        <a href="/cart" class="cart-wrapper"><i class="fa-solid fa-cart-shopping"></i><span id="cart-count">0</span></a>
+        {% if session.get('username') %}
+        <div style="display: flex; align-items: center;">
+            {% if session.get('user_id') == 1 %}
+            <a href="/admin" class="user-profile"
+                style="text-decoration: none; margin-right: 15px; color: var(--primary);">
+                <i class="fa-solid fa-lock"></i><span style="margin-left: 8px;">Admin</span>
+            </a>
+            {% endif %}
+            <a href="/profile" class="user-profile"
+                style="text-decoration: none; display: flex; align-items: center; gap: 10px;">
+                {% if session.get('profile_photo') %}
+                <img src="/static/uploads/{{ session.get('profile_photo') }}" alt="Profile"
+                    style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary);">
+                {% else %}
+                <i class="fa-regular fa-user"></i>
+                {% endif %}
+                <span style="font-size: 0.9rem; font-family: 'Rajdhani', sans-serif;">{{ session.get('username')
+                    }}</span>
+            </a>
+            <a href="/logout"
+                style="margin-left: 15px; font-size: 0.9rem; color: #ff4444; text-decoration: none; font-family: 'Rajdhani', sans-serif;">
+                <i class="fa-solid fa-right-from-bracket"></i>
+            </a>
+        </div>
+        {% else %}
+        <a href="/login" class="user-profile" style="text-decoration: none;">
+            <i class="fa-solid fa-user"></i><span style="margin-left: 8px;">Login</span>
+        </a>
+        {% endif %}
+    </header>
+
+    <div class="main-container">
+
+        <section id="promotion-bar-wrapper">
+
+            <div id="hero-carousel">
+                {% for slide in featured_slides %}
+                <div class="slide" style="background-image: url('{{ slide.image }}');" data-index="{{ loop.index0 }}">
+                    <div class="slide-content">
+                        <span class="slide-subtitle">{{ slide.subtitle }}</span>
+                        <h2>{{ slide.title }}</h2>
+                        <p>{{ slide.tagline }}</p>
+                        <a href="{{ slide.link }}" class="action-btn">
+                            {{ 'PRE-ORDER NOW' if 'Postponed' in slide.subtitle else 'SHOP NOW' }}
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+                <button class="prev-btn">‹</button>
+                <button class="next-btn">›</button>
+                <div class="carousel-nav">
+                    <div class="dot-navigation"></div>
+                </div>
+            </div>
+
+            <aside class="sidebar-right promotion-sidebar">
+                <h3>Categories</h3>
+                <ul>
+                    <li><a href="/view_all/All Games">All Games</a></li>
+                    <li><a href="/view_all/Action">Action</a></li>
+                    <li><a href="/view_all/Adventure">Adventure</a></li>
+                    <li><a href="/view_all/RPG">RPG</a></li>
+                    <li><a href="/view_all/Strategy">Strategy</a></li>
+                    <li><a href="/view_all/Indie">Indie</a></li>
+                </ul>
+            </aside>
+        </section>
+
+        <div id="dynamic-category-container"></div>
+
+        <section class="trending-section">
+            <div class="section-header">
+                <h2>Trending Now <span style="color:var(--primary)">.</span></h2>
+                <a href="/view_all/Trending" class="view-all">View All <i class="fa-solid fa-arrow-right"></i></a>
+            </div>
+
+            <div class="scroll-wrapper">
+                <button class="scroll-arrow left-arrow"><i class="fa-solid fa-chevron-left"></i></button>
+                <main class="scroll-container" id="scrollContainer">
+                    {% set count = namespace(value=0) %}
+                    {% for game in games %}
+                    {% if game.release_date and '2025' in game.release_date|string and count.value < 10 %} {% set
+                        count.value=count.value + 1 %} <div class="game-card" data-id="{{ game.id }}"
+                        data-title="{{ game.title }}" data-image="{{ game.image }}"
+                        data-landscape="{{ game.landscape_image }}" data-trailer="{{ game.trailer }}"
+                        data-description="{{ game.description }}" data-rating="{{ game.rating }}"
+                        data-release="{{ game.release_date }}" data-genre="{{ game.genre }}"
+                        data-price="{{ game.price }}">
+                        <div class="media-wrapper">
+                            <a href="/game/{{ game.id }}">
+                                <img src="{{ game.image }}" alt="{{ game.title }}" class="game-cover">
+                                <video src="{{ game.trailer }}" muted loop class="game-trailer"></video>
+                            </a>
+                        </div>
+                        <div class="game-info">
+                            <h3>{{ game.title }}</h3>
+                            {% if game.original_price and game.original_price|float > game.price|float %}
+                            <div class="sale-price-container">
+                                <span class="original-price">${{ game.original_price }}</span>
+                                <p class="price" style="color: #00ff41;">${{ game.price }}</p>
+                            </div>
+                            {% else %}
+                            <p class="price">${{ game.price }}</p>
+                            {% endif %}
+                            {% if game.stock_quantity is defined and game.stock_quantity <= 0 %} <button class="buy-btn"
+                                style="background: #dc3545; cursor: not-allowed;" disabled>Out of Stock</button>
+                                {% else %}
+                                <button class="buy-btn" onclick="addToCart(Number('{{ game.id }}'))">Add to
+                                    Cart</button>
+                                {% endif %}
+                        </div>
+            </div>
+            {% endif %}
+            {% endfor %}
+            </main>
+            <button class="scroll-arrow right-arrow"><i class="fa-solid fa-chevron-right"></i></button>
+    </div>
+    </section>
+
+
+
+    {% if editions %}
+    <section class="trending-section">
+        <div class="section-header">
+            <h2>Special Editions <span style="color:var(--primary)">.</span></h2>
+            <a href="/view_all/Special Editions" class="view-all">View All <i class="fa-solid fa-arrow-right"></i></a>
+        </div>
+
+        <main class="scroll-container">
+            {% for game in editions[:10] %}
+            <div class="game-card" data-id="{{ game.id }}" data-title="{{ game.title }}" data-image="{{ game.image }}"
+                data-landscape="{{ game.landscape_image }}" data-trailer="{{ game.trailer }}"
+                data-description="{{ game.description }}" data-rating="{{ game.rating }}"
+                data-release="{{ game.release_date }}" data-genre="{{ game.genre }}" data-price="{{ game.price }}">
+                <div class="media-wrapper">
+                    <a href="/game/{{ game.id }}">
+                        <img src="{{ game.image }}" alt="{{ game.title }}" class="game-cover">
+                        <video src="{{ game.trailer }}" muted loop class="game-trailer"></video>
+                    </a>
+                </div>
+                <div class="game-info">
+                    <h3>{{ game.title }}</h3>
+                    {% if game.original_price and game.original_price|float > game.price|float %}
+                    <div class="sale-price-container">
+                        <span class="original-price">${{ game.original_price }}</span>
+                        <p class="price" style="color: #00ff41;">${{ game.price }}</p>
+                    </div>
+                    {% else %}
+                    <p class="price">${{ game.price }}</p>
+                    {% endif %}
+                    {% if game.stock_quantity is defined and game.stock_quantity <= 0 %} <button class="buy-btn"
+                        style="background: #dc3545; cursor: not-allowed;" disabled>Out of Stock</button>
+                        {% else %}
+                        <button class="buy-btn" onclick="addToCart(Number('{{ game.id }}'))">Add to Cart</button>
+                        {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </main>
+        <button class="scroll-arrow right-arrow"><i class="fa-solid fa-chevron-right"></i></button>
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- Survival Horror Section -->
+    <section class="trending-section">
+        <div class="section-header">
+            <h2>Survival Horror <span style="color:var(--primary)">.</span></h2>
+            <a href="/view_all/Survival Horror" class="view-all">View All <i class="fa-solid fa-arrow-right"></i></a>
+        </div>
+
+
+
+        <div class="scroll-wrapper">
+            <button class="scroll-arrow left-arrow"><i class="fa-solid fa-chevron-left"></i></button>
+            <main class="scroll-container">
+                {% set count = namespace(value=0) %}
+                {% for game in survival_horror %}
+                {% if count.value < 10 %} {% set count.value=count.value + 1 %} <div class="game-card"
+                    data-id="{{ game.id }}" data-title="{{ game.title }}" data-image="{{ game.image }}"
+                    data-landscape="{{ game.landscape_image }}" data-trailer="{{ game.trailer }}"
+                    data-description="{{ game.description }}" data-rating="{{ game.rating }}"
+                    data-release="{{ game.release_date }}" data-genre="{{ game.genre }}" data-price="{{ game.price }}">
+                    <div class="media-wrapper">
+                        <a href="/game/{{ game.id }}">
+                            <img src="{{ game.image }}" alt="{{ game.title }}" class="game-cover">
+                            <video src="{{ game.trailer }}" muted loop class="game-trailer"></video>
+                        </a>
+                    </div>
+                    <div class="game-info">
+                        <h3>{{ game.title }}</h3>
+                        {% if game.original_price and game.original_price|float > game.price|float %}
+                        <div class="sale-price-container">
+                            <span class="original-price">${{ game.original_price }}</span>
+                            <p class="price" style="color: #00ff41;">${{ game.price }}</p>
+                        </div>
+                        {% else %}
+                        <p class="price">${{ game.price }}</p>
+                        {% endif %}
+                        {% if game.stock_quantity is defined and game.stock_quantity <= 0 %} <button class="buy-btn"
+                            style="background: #dc3545; cursor: not-allowed;" disabled>Out of Stock</button>
+                            {% else %}
+                            <button class="buy-btn" onclick="addToCart(Number('{{ game.id }}'))">Add to Cart</button>
+                            {% endif %}
+                    </div>
+        </div>
+        {% endif %}
+        {% endfor %}
+        </main>
+        <button class="scroll-arrow right-arrow"><i class="fa-solid fa-chevron-right"></i></button>
+        </div>
+    </section>
+
+    <!-- Global Game Hover Popup -->
+    <div id="game-hover-popup" class="game-hover-popup">
+        <div class="popup-media">
+            <video class="popup-video" muted loop autoplay></video>
+            <img class="popup-image" src="" alt="" style="display: none;">
+        </div>
+        <div class="popup-content">
+            <div class="popup-header">
+                <h4 class="popup-title"></h4>
+                <span class="popup-release"></span>
+            </div>
+            <div class="popup-meta">
+                <span class="popup-rating"></span>
+                <span class="popup-genre"></span>
+            </div>
+            <p class="popup-description"></p>
+        </div>
+    </div>
+
+    <!-- Open World Section -->
+    <section class="trending-section">
+        <div class="section-header">
+            <h2>Open World <span style="color:var(--primary)">.</span></h2>
+            <a href="/view_all/Open World" class="view-all">View All <i class="fa-solid fa-arrow-right"></i></a>
+        </div>
+
+
+
+        <div class="scroll-wrapper">
+            <button class="scroll-arrow left-arrow"><i class="fa-solid fa-chevron-left"></i></button>
+            <main class="scroll-container">
+                {% set count = namespace(value=0) %}
+                {% for game in games %}
+                {% if ('Grand Theft Auto' in game.title or 'Red Dead Redemption' in game.title or 'Cyberpunk' in
+                game.title or 'ELDEN RING' in game.title or 'Ghost of Tsushima' in game.title) and count.value < 10 %}
+                    {% set count.value=count.value + 1 %} <div class="game-card" data-id="{{ game.id }}"
+                    data-title="{{ game.title }}" data-image="{{ game.image }}"
+                    data-landscape="{{ game.landscape_image }}" data-trailer="{{ game.trailer }}"
+                    data-description="{{ game.description }}" data-rating="{{ game.rating }}"
+                    data-release="{{ game.release_date }}" data-genre="{{ game.genre }}" data-price="{{ game.price }}">
+                    <div class="media-wrapper">
+                        <a href="/game/{{ game.id }}">
+                            <img src="{{ game.image }}" alt="{{ game.title }}" class="game-cover">
+                            <video src="{{ game.trailer }}" muted loop class="game-trailer"></video>
+                        </a>
+                    </div>
+                    <div class="game-info">
+                        <h3>{{ game.title }}</h3>
+                        {% if game.original_price and game.original_price|float > game.price|float %}
+                        <div class="sale-price-container">
+                            <span class="original-price">${{ game.original_price }}</span>
+                            <p class="price" style="color: #00ff41;">${{ game.price }}</p>
+                        </div>
+                        {% else %}
+                        <p class="price">${{ game.price }}</p>
+                        {% endif %}
+                        {% if game.stock_quantity is defined and game.stock_quantity <= 0 %} <button class="buy-btn"
+                            style="background: #dc3545; cursor: not-allowed;" disabled>Out of Stock</button>
+                            {% else %}
+                            <button class="buy-btn" onclick="addToCart(Number('{{ game.id }}'))">Add to Cart</button>
+                            {% endif %}
+                    </div>
+        </div>
+        {% endif %}
+        {% endfor %}
+        </main>
+        <button class="scroll-arrow right-arrow"><i class="fa-solid fa-chevron-right"></i></button>
+        </div>
+    </section>
+
+    <!-- Dynamic Category Sections -->
+    {% for category in ['Action', 'RPG', 'Strategy', 'Adventure'] %}
+    <section class="trending-section">
+        <div class="section-header">
+            <h2>{{ category }} Games <span style="color:var(--primary)">.</span></h2>
+            <a href="/view_all/{{ category }}" class="view-all">View All <i class="fa-solid fa-arrow-right"></i></a>
+        </div>
+
+        <div class="scroll-wrapper">
+            <button class="scroll-arrow left-arrow"><i class="fa-solid fa-chevron-left"></i></button>
+            <main class="scroll-container">
+                {% set count = namespace(value=0) %}
+                {% for game in games %}
+                {% if category in game.genre and count.value < 10 %} {% set count.value=count.value + 1 %} <div
+                    class="game-card" data-id="{{ game.id }}" data-title="{{ game.title }}"
+                    data-image="{{ game.image }}" data-landscape="{{ game.landscape_image }}"
+                    data-trailer="{{ game.trailer }}" data-description="{{ game.description }}"
+                    data-rating="{{ game.rating }}" data-release="{{ game.release_date }}" data-genre="{{ game.genre }}"
+                    data-price="{{ game.price }}">
+                    <div class="media-wrapper">
+                        <a href="/game/{{ game.id }}">
+                            <img src="{{ game.image }}" alt="{{ game.title }}" class="game-cover">
+                            <video src="{{ game.trailer }}" muted loop class="game-trailer"></video>
+                        </a>
+                    </div>
+                    <div class="game-info">
+                        <h3>{{ game.title }}</h3>
+                        {% if game.original_price and game.original_price|float > game.price|float %}
+                        <div class="sale-price-container">
+                            <span class="original-price">${{ game.original_price }}</span>
+                            <p class="price" style="color: #00ff41;">${{ game.price }}</p>
+                        </div>
+                        {% else %}
+                        <p class="price">${{ game.price }}</p>
+                        {% endif %}
+                        {% if game.stock_quantity is defined and game.stock_quantity <= 0 %} <button class="buy-btn"
+                            style="background: #dc3545; cursor: not-allowed;" disabled>Out of Stock</button>
+                            {% else %}
+                            <button class="buy-btn" onclick="addToCart(Number('{{ game.id }}'))">Add to Cart</button>
+                            {% endif %}
+                    </div>
+        </div>
+        {% endif %}
+        {% endfor %}
+        </main>
+        <button class="scroll-arrow right-arrow"><i class="fa-solid fa-chevron-right"></i></button>
+        </div>
+    </section>
+    {% endfor %}
+
+
+    {% if dlcs %}
+    <section class="trending-section">
+        <div class="section-header">
+            <h2>DLCs & Expansions <span style="color:var(--primary)">.</span></h2>
+            <a href="/view_all/DLCs" class="view-all">View All <i class="fa-solid fa-arrow-right"></i></a>
+        </div>
+
+        <div class="scroll-wrapper">
+            <button class="scroll-arrow left-arrow"><i class="fa-solid fa-chevron-left"></i></button>
+            <main class="scroll-container">
+                {% for game in dlcs[:10] %}
+                <div class="game-card" data-id="{{ game.id }}" data-title="{{ game.title }}"
+                    data-image="{{ game.image }}" data-landscape="{{ game.landscape_image }}"
+                    data-trailer="{{ game.trailer }}" data-description="{{ game.description }}"
+                    data-rating="{{ game.rating }}" data-release="{{ game.release_date }}" data-genre="{{ game.genre }}"
+                    data-price="{{ game.price }}">
+                    <div class="media-wrapper">
+                        <a href="/game/{{ game.id }}">
+                            <img src="{{ game.image }}" alt="{{ game.title }}" class="game-cover">
+                            <video src="{{ game.trailer }}" muted loop class="game-trailer"></video>
+                        </a>
+                    </div>
+                    <div class="game-info">
+                        <h3>{{ game.title }}</h3>
+                        <p class="price">${{ game.price }}</p>
+                        {% if game.stock_quantity is defined and game.stock_quantity <= 0 %} <button class="buy-btn"
+                            style="background: #dc3545; cursor: not-allowed;" disabled>Out of Stock</button>
+                            {% else %}
+                            <button class="buy-btn" onclick="addToCart(Number('{{ game.id }}'))">Add to Cart</button>
+                            {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </main>
+            <button class="scroll-arrow right-arrow"><i class="fa-solid fa-chevron-right"></i></button>
+        </div>
+    </section>
+    {% endif %}
+    </div>
+
+    <div class="chatbot-container">
+        <div class="chatbot-icon" onclick="toggleChat()"><i class="fa-solid fa-robot"></i></div>
+        <div class="chatbot-window" id="chatWindow">
+            <div class="chat-header" style="display: flex; justify-content: space-between;">
+                <span>GamerZ AI Assistant</span>
+                <i class="fa-solid fa-xmark close-btn" onclick="toggleChat()"></i>
+            </div>
+            <div class="chat-body" id="chatBody">
+                <div class="bot-message">Hello! I'm powered by AI. Ask me about specs or recommendations!</div>
+            </div>
+            <div class="chat-input-area"><input type="text" id="userInput" placeholder="Type a message..."
+                    onkeypress="handleEnter(event)"><button onclick="sendMessage()"><i
+                        class="fa-solid fa-paper-plane"></i></button></div>
+        </div>
+    </div>
+
+    <script src="/static/script.js"></script>
+</body>
+
+</html>

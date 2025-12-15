@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Join GamerZ - Sign Up</title>
+    <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Rajdhani:wght@400;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* AUTH PAGE SPECIFIC STYLES */
+        .auth-container {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding-top: 80px;
+            /* Clear fixed header */
+        }
+
+        .auth-box {
+            width: 400px;
+            background: rgba(20, 20, 20, 0.9);
+            border: 1px solid var(--primary);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 0 30px rgba(0, 255, 65, 0.15);
+            text-align: center;
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Decorative glowing line at top */
+        .auth-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--primary);
+            box-shadow: 0 0 15px var(--primary);
+        }
+
+        .auth-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2rem;
+            color: white;
+            margin-bottom: 30px;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .input-group label {
+            display: block;
+            color: var(--primary);
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+            letter-spacing: 1px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid #333;
+            border-radius: 5px;
+            color: white;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1.1rem;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        .input-group input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 10px rgba(0, 255, 65, 0.2);
+        }
+
+        .auth-btn {
+            width: 100%;
+            padding: 12px;
+            background: var(--primary);
+            color: black;
+            border: none;
+            border-radius: 5px;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: bold;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-top: 10px;
+        }
+
+        .auth-btn:hover {
+            background: white;
+            box-shadow: 0 0 20px white;
+        }
+
+        .auth-footer {
+            margin-top: 20px;
+            color: #888;
+            font-size: 0.9rem;
+        }
+
+        .auth-footer a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .auth-footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Error Message Style */
+        .flash-msg {
+            background: rgba(255, 0, 0, 0.2);
+            border: 1px solid red;
+            color: #ffaaaa;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            display: none;
+            /* Hidden by default */
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="cursor-dot"></div>
+    <div class="cursor-outline"></div>
+
+    <header>
+        <div class="logo"><a href="/"><img src="/static/assets/Logo.png" alt="GamerZ Logo"></a></div>
+    </header>
+
+    <div class="auth-container">
+        <div class="auth-box">
+            <h1 class="auth-title">INITIATE SIGN UP</h1>
+
+            {% with messages = get_flashed_messages() %}
+            {% if messages %}
+            <div class="flash-msg" style="display: block;">{{ messages[0] }}</div>
+            {% endif %}
+            {% endwith %}
+
+            <form action="/signup" method="POST">
+                <div class="input-group">
+                    <label>USERNAME</label>
+                    <input type="text" name="username" placeholder="Enter codename..." required>
+                </div>
+
+                <div class="input-group">
+                    <label>EMAIL</label>
+                    <input type="email" name="email" placeholder="name@example.com" required>
+                </div>
+
+                <div class="input-group">
+                    <label>PASSWORD</label>
+                    <input type="password" name="password" placeholder="••••••••" required>
+                </div>
+
+                <button type="submit" class="auth-btn">CREATE ACCOUNT</button>
+            </form>
+
+            <div class="auth-footer">
+                Already have an account? <a href="/login">Login here</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/script.js"></script>
+</body>
+
+</html>

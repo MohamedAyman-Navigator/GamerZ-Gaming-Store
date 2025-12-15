@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ category }} Games - GamerZ</title>
+    <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Rajdhani:wght@400;600;400&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .view-all-header {
+            text-align: center;
+            padding: 40px 20px;
+            margin-top: 120px;
+            /* Added spacing from top nav */
+        }
+
+        .view-all-header h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+        }
+
+        .view-all-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 30px;
+            padding: 0 5% 80px;
+        }
+
+        /* Reuse game card styles but ensure they fit the grid */
+        .view-all-grid .game-card {
+            min-width: 0;
+            /* Override scroll-container min-width */
+            margin: 0;
+        }
+
+        /* Pagination Styles */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            padding-bottom: 60px;
+        }
+
+        .page-link {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            padding: 10px 15px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-family: 'Orbitron', sans-serif;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .page-link:hover,
+        .page-link.active {
+            background: var(--primary);
+            color: #000;
+            box-shadow: 0 0 15px var(--primary);
+            border-color: var(--primary);
+        }
+
+        .page-link.disabled {
+            pointer-events: none;
+            background: transparent;
+            border: none;
+            color: #888;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="cursor-dot"></div>
+    <div class="cursor-outline"></div>
+
+    <header>
+        <div class="logo">
+            <a href="/"><img src="/static/assets/Logo.png" alt="GamerZ Logo"></a>
+        </div>
+        <div class="search-bar">
+            <input type="text" id="search-input" placeholder="Search games..." autocomplete="off"><i
+                class="fa-solid fa-magnifying-glass"></i>
+            <div id="search-results" class="search-results-dropdown"></div>
+        </div>
+        <div class="torch-toggle" id="themeToggle" title="Toggle Light Mode"><i
+                class="fa-solid fa-fire-flame-curved"></i></div>
+        <a href="/cart" class="cart-wrapper"><i class="fa-solid fa-cart-shopping"></i><span id="cart-count">0</span></a>
+        {% if session.get('username') %}
+        <div style="display: flex; align-items: center;">
+            {% if session.get('user_id') == 1 %}
+            <a href="/admin" class="user-profile"
+                style="text-decoration: none; margin-right: 15px; color: var(--primary);">
+                <i class="fa-solid fa-lock"></i><span style="margin-left: 8px;">Admin</span>
+            </a>
+            {% endif %}
+            <a href="/profile" class="user-profile"
+                style="text-decoration: none; display: flex; align-items: center; gap: 10px;">
+                {% if session.get('profile_photo') %}
+                <img src="/static/uploads/{{ session.get('profile_photo') }}" alt="Profile"
+                    style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary);">
+                {% else %}
+                <i class="fa-regular fa-user"></i>
+                {% endif %}
+                <span style="font-size: 0.9rem; font-family: 'Rajdhani', sans-serif;">{{ session.get('username')
+                    }}</span>
+            </a>
+            <a href="/logout"
+                style="margin-left: 15px; font-size: 0.9rem; color: #ff4444; text-decoration: none; font-family: 'Rajdhani', sans-serif;">
+                <i class="fa-solid fa-right-from-bracket"></i>
+            </a>
+        </div>
+        {% else %}
+        <a href="/login" class="user-profile" style="text-decoration: none;">
+            <i class="fa-solid fa-user"></i><span style="margin-left: 8px;">Login</span>
+        </a>
+        {% endif %}
+    </header>
+
+    <div class="view-all-header">
+        <h1>{{ category }} <span style="color:var(--primary)">.</span></h1>
+        <p style="color: #888; font-family: 'Rajdhani', sans-serif; font-size: 1.2rem;">Browsing all {{ games|length }}
+            titles</p>
+    </div>
+
+    <!-- Game Hover Popup -->
+    <div id="game-hover-popup" class="game-hover-popup">
+        <div class="popup-media">
+            <img src="" alt="Game Cover" class="popup-image">
+            <video src="" muted loop class="popup-video"></video>
+        </div>
+        <div class="popup-content">
+            <div class="popup-header">
+                <h3 class="popup-title">Game Title</h3>
+                <span class="popup-release">2024</span>
+            </div>
+            <div class="popup-meta">
+                <div class="popup-rating"><i class="fa-solid fa-star"></i> <span>9.5</span></div>
+                <span class="popup-genre">Action</span>
+            </div>
+            <p class="popup-description">Game description goes here...</p>
+        </div>
+    </div>
+
+    <main class="view-all-grid">
+        {% for game in games %}
+        <div class="game-card" data-id="{{ game.id }}" data-title="{{ game.title }}" data-image="{{ game.image }}"
+            data-landscape="{{ game.landscape_image }}" data-trailer="{{ game.trailer }}"
+            data-description="{{ game.description }}" data-rating="{{ game.rating }}"
+            data-release="{{ game.release_date }}" data-genre="{{ game.genre }}" data-price="{{ game.price }}">
+            <div class="media-wrapper">
+                <a href="/game/{{ game.id }}">
+                    <img src="{{ game.image }}" alt="{{ game.title }}" class="game-cover">
+                    <video src="{{ game.trailer }}" muted loop class="game-trailer"></video>
+                </a>
+            </div>
+            <div class="game-info">
+                <h3>{{ game.title }}</h3>
+                {% if game.original_price and game.original_price|float > game.price|float %}
+                <div class="sale-price-container">
+                    <span class="original-price">${{ game.original_price }}</span>
+                    <p class="price" style="color: #00ff41;">${{ game.price }}</p>
+                </div>
+                {% else %}
+                <p class="price">${{ game.price }}</p>
+                {% endif %}
+                {% if game.stock_quantity is defined and game.stock_quantity <= 0 %} <button class="buy-btn"
+                    style="background: #dc3545; cursor: not-allowed;" disabled>Out of Stock</button>
+                    {% else %}
+                    <button class="buy-btn" onclick="addToCart(Number('{{ game.id }}'))">Add to Cart</button>
+                    {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </main>
+
+    <!-- Pagination Controls -->
+    {% if total_pages > 1 %}
+    <div class="pagination">
+        {% if page > 1 %}
+        <a href="{{ url_for('view_all', category=category, page=page-1) }}" class="page-link"><i
+                class="fa-solid fa-chevron-left"></i> Prev</a>
+        {% endif %}
+
+        {% for p in page_range %}
+        {% if p is none %}
+        <span class="page-link disabled">...</span>
+        {% else %}
+        <a href="{{ url_for('view_all', category=category, page=p) }}"
+            class="page-link {% if p == page %}active{% endif %}">{{
+            p }}</a>
+        {% endif %}
+        {% endfor %}
+
+        {% if page < total_pages %} <a href="{{ url_for('view_all', category=category, page=page+1) }}"
+            class="page-link">Next
+            <i class="fa-solid fa-chevron-right"></i></a>
+            {% endif %}
+    </div>
+    {% endif %}
+
+    <script src="/static/script.js"></script>
+</body>
+
+</html>
